@@ -1,0 +1,240 @@
+/* Custom CSS untuk Django Admin */
+
+/* Header styling */
+#header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+#header h1 a {
+    color: white;
+    text-decoration: none;
+}
+
+/* Breadcrumbs */
+div.breadcrumbs {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    color: #4a5568;
+}
+
+div.breadcrumbs a {
+    color: #3182ce;
+    text-decoration: none;
+}
+
+/* Module styling */
+.module {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.module h2 {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    padding: 12px 16px;
+    margin: 0;
+}
+
+/* Table styling */
+#result_list {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#result_list thead th {
+    background: #f7fafc;
+    color: #2d3748;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+#result_list tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+#result_list tbody tr:hover {
+    background: #e2e8f0;
+    transition: background 0.2s;
+}
+
+/* Button styling */
+.button, input[type=submit], input[type=button], .submit-row input, button {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, button:hover {
+    background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form styling */
+.form-row {
+    padding: 12px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.form-row:last-child {
+    border-bottom: none;
+}
+
+fieldset {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin: 16px 0;
+    padding: 16px;
+}
+
+fieldset legend {
+    background: white;
+    color: #2d3748;
+    font-weight: 600;
+    padding: 0 8px;
+}
+
+/* Collapse styling */
+fieldset.collapse {
+    border: 1px solid #cbd5e0;
+}
+
+fieldset.collapsed * {
+    display: none;
+}
+
+fieldset.collapsed legend {
+    display: block;
+}
+
+/* Inline styling */
+.inline-group {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin: 16px 0;
+}
+
+.inline-group .module {
+    box-shadow: none;
+    margin: 0;
+}
+
+/* Message styling */
+.messagelist {
+    margin: 0;
+    padding: 0;
+}
+
+.messagelist li {
+    border-radius: 6px;
+    margin: 8px 0;
+    padding: 12px 16px;
+    list-style: none;
+}
+
+.messagelist .success {
+    background: #f0fff4;
+    border: 1px solid #9ae6b4;
+    color: #22543d;
+}
+
+.messagelist .warning {
+    background: #fffbf0;
+    border: 1px solid #f6d55c;
+    color: #744210;
+}
+
+.messagelist .error {
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    color: #742a2a;
+}
+
+/* Pagination */
+.paginator {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.paginator a, .paginator span {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 2px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.paginator a {
+    background: #f7fafc;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+}
+
+.paginator a:hover {
+    background: #e2e8f0;
+}
+
+.paginator .this-page {
+    background: #3182ce;
+    color: white;
+    border: 1px solid #3182ce;
+}
+
+/* Search box */
+#searchbar {
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+#searchbar:focus {
+    border-color: #3182ce;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+/* Custom badges and labels */
+.admin-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.admin-badge.success {
+    background: #10b981;
+    color: white;
+}
+
+.admin-badge.info {
+    background: #3b82f6;
+    color: white;
+}
+
+.admin-badge.warning {
+    background: #f59e0b;
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #result_list {
+        font-size: 12px;
+    }
+    
+    .form-row {
+        padding: 8px 0;
+    }
+}
