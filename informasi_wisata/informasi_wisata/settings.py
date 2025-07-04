@@ -56,8 +56,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'wisata', # App
 ]
+USE_L10N = True
+USE_THOUSAND_SEPARATOR = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

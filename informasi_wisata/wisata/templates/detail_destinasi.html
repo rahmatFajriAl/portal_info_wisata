@@ -1,476 +1,757 @@
 {% extends "layouts.html" %}
 
 {% block title %}{{ destinasi.nama }} - Info Wisata{% endblock %}
-
+{% load humanize %}
+{% load formatters %}
 {% block content %}
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        color: #333;
-    }
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: white;
+    min-height: 100vh;
+}
 
-    .hero-section {
-        /* Menggunakan gambar pertama dari galeri sebagai background */
-        background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{% if gambar_list %}{{ gambar_list.0.gambar.url }}{% else %}data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><rect fill="%2300bcd4" width="1000" height="600"/><circle fill="%23ffffff" opacity="0.1" cx="200" cy="150" r="80"/><circle fill="%23ffffff" opacity="0.05" cx="800" cy="400" r="120"/></svg>{% endif %}');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        height: 70vh;
-        position: relative;
-        overflow: hidden;
-        margin-bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+/* Hero Section */
+.hero-section {
+    position: relative;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
 
-    .hero-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-        animation: shimmer 3s infinite;
-    }
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
 
-    @keyframes shimmer {
-        0% { left: -100%; }
-        100% { left: 100%; }
-    }
+.hero-content {
+    z-index: 2;
+    animation: fadeInUp 1s ease-out;
+}
 
-    .hero-content {
-        text-align: center;
-        color: white;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 0 20px;
-        z-index: 2;
-        position: relative;
-    }
+.hero-title {
+    font-size: 4rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: slideInDown 1s ease-out;
+}
 
-    .hero-title {
-        font-size: 4rem;
-        font-weight: 700;
-        text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
-        margin-bottom: 1rem;
-        animation: fadeInUp 1s ease-out;
-        letter-spacing: 2px;
-    }
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+    animation: slideInUp 1s ease-out 0.3s both;
+}
 
-    .hero-overlay-text {
-        font-size: 1.3rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-        animation: fadeInUp 1s ease-out 0.2s both;
-        opacity: 0.9;
-    }
+.scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 2rem;
+    animation: bounce 2s infinite;
+    cursor: pointer;
+}
 
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+    40% { transform: translateX(-50%) translateY(-10px); }
+    60% { transform: translateX(-50%) translateY(-5px); }
+}
 
-    .content-section {
-        background: white;
-        border-radius: 30px 30px 0 0;
-        position: relative;
-        z-index: 10;
-        padding: 4rem 2rem;
-        box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
-        margin-top: -30px;
-    }
+/* Content Section */
+.content-section {
+    position: relative;
+    background: white;
+    border-radius: 2rem 2rem 0 0;
+    margin-top: -4rem;
+    padding: 4rem 0 3rem 0;
+    box-shadow: 0 -20px 40px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
 
-    .info-section {
-        background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
-        backdrop-filter: blur(10px);
-        border-radius: 25px;
-        padding: 3rem;
-        margin-bottom: 3rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        border: 1px solid rgba(255,255,255,0.2);
-    }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
 
-    .info-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        text-align: center;
-    }
+/* Glass Card Effect */
+.glass-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
 
-    .info-location {
-        font-size: 1.3rem;
-        color: #666;
-        margin-bottom: 1.5rem;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
 
-    .info-location i {
-        color: #667eea;
-    }
+/* Info Section */
+.info-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
 
-    .info-description {
-        font-size: 1.1rem;
-        line-height: 1.8;
-        color: #555;
-        text-align: center;
-        font-style: italic;
-    }
+.info-location {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-    .section-title {
-        font-size: 2.5rem !important;
-        font-weight: 700 !important;
-        margin-bottom: 3rem !important;
-        text-align: center;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        position: relative;
-    }
+.info-location a {
+    color: #667eea;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
 
-    .section-title::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 4px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        border-radius: 2px;
-    }
+.info-location a:hover {
+    color: #764ba2;
+}
 
-    .gallery-item {
-        position: relative;
-        overflow: hidden;
-        border-radius: 20px;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
+.info-description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #4a5568;
+    margin-bottom: 2rem;
+    text-align: justify;
+}
 
-    .gallery-item:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    }
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
 
-    .gallery-item img {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
+.info-item {
+    background: linear-gradient(135deg, #f8f9ff, #e8f0ff);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+}
 
-    .gallery-item:hover img {
-        transform: scale(1.1);
-    }
+.info-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+}
 
-    .gallery-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+.info-item i {
+    font-size: 2rem;
+    color: #667eea;
+    margin-bottom: 1rem;
+}
 
-    .gallery-item:hover .gallery-overlay {
-        opacity: 1;
-    }
+.info-item h5 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
 
-    .gallery-icon {
-        color: white;
-        font-size: 2rem;
-        animation: pulse 2s infinite;
-    }
+/* Enhanced Button Styles - Ukuran lebih kecil dan proporsional */
+.btn-ticket {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: auto;
+    white-space: nowrap;
+}
 
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-    }
+.btn-ticket::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
 
-    .review-card {
-        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2) !important;
-        border-radius: 20px !important;
-        padding: 2rem !important;
-        margin-bottom: 2rem !important;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
+.btn-ticket:hover::before {
+    left: 100%;
+}
 
-    .review-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-    }
+.btn-ticket:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+}
 
-    .review-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
-    }
+.btn-ticket:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
 
-    .review-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
+.btn-ticket i {
+    font-size: 0.7rem;
+}
 
-    .review-username {
-        font-weight: 600 !important;
-        font-size: 1.1rem;
-        color: #333;
-        margin-right: 1rem;
+/* Responsive button untuk mobile */
+@media (max-width: 768px) {
+    .btn-ticket {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+        border-radius: 10px;
     }
-
-    .review-rating {
-        color: #ffd700;
-        font-size: 1.1rem;
+    
+    .btn-ticket i {
+        font-size: 0.65rem;
     }
+}
 
-    .review-comment {
-        font-size: 1rem;
-        line-height: 1.6;
-        color: #555;
-        margin-bottom: 1rem !important;
-        font-style: italic;
+@media (max-width: 480px) {
+    .btn-ticket {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.7rem;
+        border-radius: 8px;
     }
-
-    .review-date {
-        font-size: 0.9rem;
-        color: #888 !important;
+    
+    .btn-ticket i {
+        font-size: 0.6rem;
     }
+}
 
-    .floating-elements {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1;
-    }
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    padding: 2rem;
+}
 
-    .floating-circle {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.1);
-        animation: float 6s ease-in-out infinite;
-    }
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
 
-    .floating-circle:nth-child(1) {
-        width: 60px;
-        height: 60px;
-        top: 10%;
-        left: 10%;
-        animation-delay: 0s;
-    }
+.modal-content {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transform: scale(0.8) translateY(50px);
+    transition: all 0.3s ease;
+}
 
-    .floating-circle:nth-child(2) {
-        width: 80px;
-        height: 80px;
-        top: 20%;
-        right: 15%;
-        animation-delay: 2s;
-    }
+.modal-overlay.active .modal-content {
+    transform: scale(1) translateY(0);
+}
 
-    .floating-circle:nth-child(3) {
-        width: 40px;
-        height: 40px;
-        bottom: 20%;
-        left: 20%;
-        animation-delay: 4s;
-    }
+.modal-content h3 {
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
 
-    @keyframes float {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-20px) rotate(180deg); }
-    }
+.modal-content ul {
+    list-style: none;
+    padding: 0;
+}
 
-    .stagger-animation {
+.modal-content li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #edf2f7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-content li:last-child {
+    border-bottom: none;
+}
+
+.close-button {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #a0aec0;
+    transition: color 0.3s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f7fafc;
+}
+
+.close-button:hover {
+    color: #e53e3e;
+    background: #fed7d7;
+}
+
+/* Section Title */
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 3rem 0 2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.section-title i {
+    color: #667eea;
+}
+
+/* Gallery Grid */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.gallery-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Lightbox for gallery images */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.lightbox.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lightbox-content {
+    max-width: 90%;
+    max-height: 90%;
+    position: relative;
+}
+
+.lightbox-content img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.lightbox-close:hover {
+    color: #ff6b6b;
+}
+
+/* Reviews Section */
+.review-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid #667eea;
+}
+
+.review-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.review-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.review-username {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.review-rating {
+    color: #fbbf24;
+    font-size: 0.9rem;
+}
+
+.review-rating i {
+    margin-right: 0.2rem;
+}
+
+.review-comment {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.review-date {
+    color: #a0aec0;
+    font-size: 0.9rem;
+}
+
+/* Form Section */
+.form-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.form-section h4 {
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+/* No Content */
+.no-content {
+    text-align: center;
+    padding: 3rem;
+    color: #a0aec0;
+}
+
+.no-content i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
         opacity: 0;
         transform: translateY(30px);
-        animation: staggerFadeIn 0.6s ease-out forwards;
     }
-
-    .stagger-animation:nth-child(1) { animation-delay: 0.1s; }
-    .stagger-animation:nth-child(2) { animation-delay: 0.2s; }
-    .stagger-animation:nth-child(3) { animation-delay: 0.3s; }
-    .stagger-animation:nth-child(4) { animation-delay: 0.4s; }
-
-    @keyframes staggerFadeIn {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
+}
 
-    .no-content {
-        text-align: center;
-        padding: 3rem;
-        color: #666;
-        font-size: 1.1rem;
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
     }
-
-    .no-content i {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: #ccc;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
+}
 
-    /* Bootstrap overrides */
-    .row {
-        margin: 0 -15px;
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
     }
-
-    .col-md-4 {
-        padding: 0 15px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
+}
 
-    .mb-3 {
-        margin-bottom: 2rem !important;
+.stagger-animation {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.stagger-animation:nth-child(2) { animation-delay: 0.1s; }
+.stagger-animation:nth-child(3) { animation-delay: 0.2s; }
+.stagger-animation:nth-child(4) { animation-delay: 0.3s; }
+.stagger-animation:nth-child(5) { animation-delay: 0.4s; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
     }
-
-    .mt-4 {
-        margin-top: 3rem !important;
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
     }
-
-    .p-3 {
-        padding: 2rem !important;
+    
+    .container {
+        padding: 0 1rem;
     }
-
-    .img-fluid {
-        max-width: 100%;
-        height: auto;
+    
+    .glass-card {
+        padding: 1.5rem;
     }
-
-    .rounded {
-        border-radius: 20px !important;
+    
+    .info-grid {
+        grid-template-columns: 1fr;
     }
-
-    .shadow {
-        box-shadow: none !important;
+    
+    .gallery-grid {
+        grid-template-columns: 1fr;
     }
-
-    .shadow-sm {
-        box-shadow: none !important;
+    
+    .section-title {
+        font-size: 1.5rem;
     }
-
-    .text-muted {
-        color: #888 !important;
+    
+    .modal-overlay {
+        padding: 1rem;
     }
-
-    .border {
-        border: none !important;
+    
+    .modal-content {
+        padding: 1.5rem;
+        margin: 0;
     }
+}
 
-    @media (max-width: 768px) {
-        .hero-title {
-            font-size: 2.5rem;
-        }
-        
-        .hero-section {
-            height: 60vh;
-            background-attachment: scroll;
-        }
-        
-        .section-title {
-            font-size: 2rem !important;
-        }
-        
-        .content-section {
-            padding: 2rem 1rem;
-        }
-
-        .info-section {
-            padding: 2rem;
-        }
-
-        .info-title {
-            font-size: 2rem;
-        }
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 2rem;
     }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .content-section {
+        margin-top: -2rem;
+        padding: 2rem 0;
+    }
+    
+    .modal-content {
+        padding: 1.5rem;
+    }
+}
 </style>
 
-<div class="floating-elements">
-    <div class="floating-circle"></div>
-    <div class="floating-circle"></div>
-    <div class="floating-circle"></div>
-</div>
-
-<!-- Hero Section dengan Background Gambar -->
-<div class="hero-section">
+<!-- Hero Section -->
+<div class="hero-section" {% if gambar_list.0 %}style="background-image: url('{{ gambar_list.0.gambar.url }}');"{% endif %}>
     <div class="hero-content">
         <h1 class="hero-title">{{ destinasi.nama }}</h1>
-        <p class="hero-overlay-text">Jelajahi Keindahan Alam Indonesia</p>
+        <p class="hero-subtitle">Jelajahi Keindahan Alam Indonesia</p>
+    </div>
+    <div class="scroll-indicator" onclick="document.querySelector('.content-section').scrollIntoView({behavior: 'smooth'})">
+        <i class="fas fa-chevron-down"></i>
     </div>
 </div>
 
 <!-- Content Section -->
 <div class="content-section">
     <div class="container">
-        <!-- Info Section (Teks yang dipindahkan dari hero) -->
-        <div class="info-section stagger-animation">
-    <h2 class="info-title">{{ destinasi.nama }}</h2>
-    <p class="info-location">
-        <i class="fas fa-map-marker-alt"></i>
-        <a href="https://www.google.com/maps/search/?api=1&query={{ destinasi.lokasi|urlencode }}"
-           target="_blank" rel="noopener noreferrer">
-            {{ destinasi.lokasi }}
-        </a>
-    </p>
-    <p class="info-description">{{ destinasi.deskripsi }}</p>
-</div>
+        <!-- Info Section -->
+        <div class="glass-card stagger-animation">
+            <h2 class="info-title">{{ destinasi.nama }}</h2>
+            <p class="info-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <a href="https://www.google.com/maps/search/?api=1&query={{ destinasi.lokasi|urlencode }}" target="_blank" rel="noopener noreferrer">
+                    {{ destinasi.lokasi }}
+                </a>
+            </p>
+            <p class="info-description">{{ destinasi.deskripsi }}</p>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h5>Harga Tiket</h5>
+                    <p>{{ destinasi.harga_tiket }}</p>
+                    <button class="btn-ticket" onclick="openModal()">
+                        <i class="fas fa-eye me-2"></i>Lihat Detail
+                    </button>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <h5>Jam Operasional</h5>
+                    <p>
+                        {% if destinasi.jam_buka and destinasi.jam_tutup %}
+                            {{ destinasi.jam_buka|time:"H:i" }} - {{ destinasi.jam_tutup|time:"H:i" }}
+                        {% else %}
+                            Tidak tersedia
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Harga Tiket -->
+        <div id="hargaModal" class="modal-overlay">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </span>
+                <h3><i class="fas fa-ticket-alt me-2"></i>Detail Harga Tiket</h3>
+                {% if harga_list %}
+                    <ul>
+                        {% for harga in harga_list %}
+                            <li>
+                                <strong>{{ harga.jenis_tiket }}</strong>: 
+                                <span style="color: #667eea; font-weight: 600;">
+                                     Rp {{ harga.harga|floatformat:0|intcomma }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="text-align: center; color: #a0aec0;">Tidak ada informasi harga tambahan.</p>
+                {% endif %}
+            </div>
+        </div>
 
         <!-- Gallery Section -->
-        <h3 class="mt-4 section-title">
-            <i class="fas fa-images"></i> Galeri Gambar
-        </h3>
-        
-        <div class="row">
+        <h3 class="section-title"><i class="fas fa-images"></i>Galeri Gambar</h3>
+        <div class="gallery-grid">
             {% for gambar in gambar_list %}
-                <div class="col-md-4 mb-3 stagger-animation">
-                    <div class="gallery-item">
-                        <img src="{{ gambar.gambar.url }}" class="img-fluid rounded shadow" alt="{{ gambar.keterangan }}">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus gallery-icon"></i>
-                        </div>
+                <div class="gallery-item stagger-animation" onclick="openLightbox('{{ gambar.gambar.url }}', '{{ gambar.keterangan }}')">
+                    <img src="{{ gambar.gambar.url }}" alt="{{ gambar.keterangan }}">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus gallery-icon"></i>
+                        <div class="gallery-text">{{ gambar.keterangan }}</div>
                     </div>
                 </div>
             {% empty %}
@@ -481,27 +762,36 @@
             {% endfor %}
         </div>
 
+        <!-- Lightbox -->
+        <div id="lightbox" class="lightbox">
+            <div class="lightbox-content">
+                <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+                <img id="lightbox-image" src="" alt="">
+            </div>
+        </div>
+
         <!-- Reviews Section -->
-        <h3 class="mt-4 section-title">
-            <i class="fas fa-star"></i> Ulasan Pengguna
-        </h3>
+        <h3 class="section-title"><i class="fas fa-star"></i>Ulasan Pengguna</h3>
         {% for ulasan in ulasan_list %}
-            <div class="border p-3 mb-3 rounded shadow-sm review-card stagger-animation">
+            <div class="review-card stagger-animation">
                 <div class="review-header">
-                    <strong class="review-username">{{ ulasan.pengguna.username }}</strong>
-                    <span class="review-rating">
-                        {% for i in "12345" %}
-                            {% if forloop.counter <= ulasan.rating %}
-                                <i class="fas fa-star"></i>
-                            {% else %}
-                                <i class="far fa-star"></i>
-                            {% endif %}
-                        {% endfor %}
-                        {{ ulasan.rating }}/5
-                    </span>
+                    <div class="review-avatar">{{ ulasan.pengguna.username|first|upper }}</div>
+                    <div>
+                        <div class="review-username">{{ ulasan.pengguna.username }}</div>
+                        <div class="review-rating">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= ulasan.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span style="color: #4a5568; margin-left: 0.5rem;">{{ ulasan.rating }}/5</span>
+                        </div>
+                    </div>
                 </div>
                 <p class="review-comment">{{ ulasan.komentar }}</p>
-                <small class="text-muted review-date">{{ ulasan.tanggal_ulasan }}</small>
+                <div class="review-date">{{ ulasan.tanggal_ulasan }}</div>
             </div>
         {% empty %}
             <div class="no-content">
@@ -511,187 +801,103 @@
         {% endfor %}
 
         {% if user.is_authenticated %}
-            <h4 class="mt-5">Tulis Ulasan Anda</h4>
-            <form method="POST" class="mb-5">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="id_rating">Rating (1-5)</label>
-                    {{ form.rating }}
-                </div>
-                <div class="mb-3">
-                    <label for="id_komentar">Komentar</label>
-                    {{ form.komentar }}
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane me-1"></i> Kirim Ulasan
-                    </button>
-                    <a href="{% url 'destinasi_wisata' %}" class="btn btn-danger">
-                        <i class="fas fa-arrow-left me-1"></i> Kembali ke Destinasi
-                    </a>
-                </div>
-            </form>
+            <div class="form-section">
+                <h4><i class="fas fa-pen me-2"></i>Tulis Ulasan Anda</h4>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_rating" class="form-label">Rating (1-5)</label>
+                        {{ form.rating }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_komentar" class="form-label">Komentar</label>
+                        {{ form.komentar }}
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>Kirim Ulasan
+                        </button>
+                        <a href="{% url 'destinasi_wisata' %}" class="btn btn-danger">
+                            <i class="fas fa-arrow-left me-2"></i>Kembali ke Destinasi
+                        </a>
+                    </div>
+                </form>
+            </div>
         {% else %}
-            <p class="text-muted mt-4">Silakan <a href="{% url 'login' %}">login</a> untuk menulis ulasan.</p>
+            <div class="glass-card">
+                <p class="text-center" style="font-size: 1.2rem; color: #666;">
+                    Silakan <a href="{% url 'login' %}" style="color: #667eea; text-decoration: none; font-weight: 600;">login</a> untuk menulis ulasan.
+                </p>
+            </div>
         {% endif %}
     </div>
 </div>
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
 <script>
-    // Smooth scrolling and entrance animations
-    window.addEventListener('load', function() {
-        // Add entrance animations to elements
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
-                }
-            });
-        }, observerOptions);
-
-        // Observe gallery items and review cards
-        document.querySelectorAll('.gallery-item, .review-card').forEach(el => {
-            observer.observe(el);
-        });
-    });
-
-    // Gallery hover effects
-    document.querySelectorAll('.gallery-item').forEach(item => {
-        item.addEventListener('click', function() {
-            // Add click animation
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 150);
-        });
-    });
-
-    // Add parallax effect to hero section
-    window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const heroSection = document.querySelector('.hero-section');
-        if (heroSection) {
-            heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
-        }
-    });
-    // Lightbox functionality
-class Lightbox {
-    constructor() {
-        this.currentIndex = 0;
-        this.images = [];
-        this.init();
-    }
-    
-    init() {
-        // Collect all gallery images
-        this.images = Array.from(document.querySelectorAll('.gallery-item')).map(item => ({
-            src: item.querySelector('img').src,
-            alt: item.querySelector('img').alt
-        }));
-        
-        // Add click events to gallery items
-        document.querySelectorAll('.gallery-item').forEach((item, index) => {
-            item.addEventListener('click', () => {
-                this.openLightbox(index);
-            });
-        });
-        
-        // Create lightbox modal
-        this.createLightboxModal();
-    }
-    
-    createLightboxModal() {
-        const lightboxHTML = `
-            <div class="lightbox" id="lightbox">
-                <div class="lightbox-content">
-                    <button class="lightbox-close" id="lightbox-close">×</button>
-                    <img src="" alt="" id="lightbox-image">
-                </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', lightboxHTML);
-        
-        // Add lightbox styles
-        const lightboxStyles = `
-            <style>
-                .lightbox {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0, 0, 0, 0.9);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 1000;
-                    opacity: 0;
-                    visibility: hidden;
-                    transition: all 0.3s ease;
-                }
-                .lightbox.active {
-                    opacity: 1;
-                    visibility: visible;
-                }
-                .lightbox-content {
-                    position: relative;
-                    max-width: 90%;
-                    max-height: 90%;
-                }
-                .lightbox img {
-                    max-width: 100%;
-                    max-height: 100%;
-                    object-fit: contain;
-                    border-radius: 10px;
-                }
-                .lightbox-close {
-                    position: absolute;
-                    top: -40px;
-                    right: 0;
-                    background: none;
-                    border: none;
-                    color: white;
-                    font-size: 2rem;
-                    cursor: pointer;
-                }
-            </style>
-        `;
-        document.head.insertAdjacentHTML('beforeend', lightboxStyles);
-        
-        // Add event listeners
-        document.getElementById('lightbox-close').addEventListener('click', () => this.closeLightbox());
-        document.getElementById('lightbox').addEventListener('click', (e) => {
-            if (e.target.id === 'lightbox') this.closeLightbox();
-        });
-    }
-    
-    openLightbox(index) {
-        this.currentIndex = index;
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImage = document.getElementById('lightbox-image');
-        
-        lightboxImage.src = this.images[index].src;
-        lightboxImage.alt = this.images[index].alt;
-        lightbox.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    
-    closeLightbox() {
-        document.getElementById('lightbox').classList.remove('active');
-        document.body.style.overflow = '';
-    }
+function openModal() {
+    const modal = document.getElementById('hargaModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
-// Initialize lightbox when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    new Lightbox();
+function closeModal() {
+    const modal = document.getElementById('hargaModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+function openLightbox(imageSrc, imageAlt) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    lightboxImage.src = imageSrc;
+    lightboxImage.alt = imageAlt;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    lightbox.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+document.getElementById('hargaModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// Close lightbox when clicking outside
+document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeLightbox();
+    }
+});
+
+// Close modal and lightbox with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+        closeLightbox();
+    }
+});
+
+// Smooth scroll for scroll indicator
+document.addEventListener('DOMContentLoaded', function() {
+    const scrollIndicator = document.querySelector('.scroll-indicator');
+    if (scrollIndicator) {
+        scrollIndicator.addEventListener('click', function() {
+            document.querySelector('.content-section').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    }
 });
 </script>
+
+<!-- Fonts & Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
 {% endblock %}

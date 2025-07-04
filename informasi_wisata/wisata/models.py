@@ -8,7 +8,8 @@ from django.contrib.auth.models import User  # Pakai model bawaan Django (inheri
 class KategoriDestinasi(models.Model):  #  Inheritance: Mewarisi dari models.Model
     # Nama dan deskripsi kategori, misalnya "Pantai", "Gunung", dll
     nama = models.CharField(max_length=100, verbose_name=_("Nama Kategori"))  #  Enkapsulasi
-    deskripsi = models.TextField(blank=True, null=True, verbose_name=_("Deskripsi"))
+    deskripsi = models.TextField(blank=True, null=True, 
+                                 verbose_name=_("Deskripsi"))
 
     class Meta:
         verbose_name = _("Kategori Destinasi")
@@ -18,26 +19,87 @@ class KategoriDestinasi(models.Model):  #  Inheritance: Mewarisi dari models.Mod
         return self.nama
 
 
-class DestinasiWisata(models.Model):  # Inheritance
-    # Model utama destinasi wisata
-    nama = models.CharField(max_length=200, verbose_name=_("Nama Destinasi"))  # 
-    deskripsi = models.TextField(verbose_name=_("Deskripsi"))
-    lokasi = models.CharField(max_length=255, verbose_name=_("Lokasi"))
-    kategori = models.ForeignKey(  # Relasi ke KategoriDestinasi (Many to One)
-        KategoriDestinasi,
+class DestinasiWisata(models.Model):
+    nama = models.CharField(max_length=100)
+    lokasi = models.CharField(max_length=255)
+    kategori = models.ForeignKey(KategoriDestinasi, on_delete=models.CASCADE)
+    deskripsi = models.TextField()
+    harga_tiket = models.CharField(max_length=50, default="Gratis")
+    jam_buka = models.TimeField(null=True, blank=True)
+    jam_tutup = models.TimeField(null=True, blank=True)
+    tanggal_dibuat = models.DateTimeField(auto_now_add=True)
+    tanggal_diperbarui = models.DateTimeField(auto_now=True)
+
+    def __str__(self):  # Polimorfisme
+        return self.nama
+
+
+class DetailHargaTiket(models.Model):
+    """Model untuk menyimpan detail harga tiket per destinasi"""
+    JENIS_TIKET_CHOICES = [
+        ('masuk_lokal', 'Tiket Masuk Turis Lokal'),
+        ('masuk_asing', 'Tiket Masuk Turis Asing'),
+        ('parkir_motor', 'Parkir Motor'),
+        ('parkir_mobil', 'Parkir Mobil'),
+        ('parkir_bus', 'Parkir Bus'),
+        ('wahana', 'Wahana Tambahan'),
+        ('guide', 'Guide/Pemandu'),
+        ('other', 'Lainnya'),
+    ]
+    
+    destinasi = models.ForeignKey(
+        DestinasiWisata,
         on_delete=models.CASCADE,
-        related_name='destinasi',
-        verbose_name=_("Kategori")
+        related_name='detail_harga',
+        verbose_name=_("Destinasi")
     )
-    tanggal_dibuat = models.DateTimeField(auto_now_add=True, verbose_name=_("Tanggal Dibuat"))  # Timestamp otomatis
-    tanggal_diperbarui = models.DateTimeField(auto_now=True, verbose_name=_("Tanggal Diperbarui"))
+    jenis_tiket = models.CharField(
+        max_length=20,
+        choices=JENIS_TIKET_CHOICES,
+        verbose_name=_("Jenis Tiket")
+    )
+    nama_tiket = models.CharField(
+        max_length=100,
+        verbose_name=_("Nama Tiket"),
+        help_text=_("Contoh: Tiket Masuk Pantai Gigi Hiu")
+    )
+    harga = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name=_("Harga (Rp)")
+    )
+    satuan = models.CharField(
+        max_length=50,
+        default="orang",
+        verbose_name=_("Satuan"),
+        help_text=_("Contoh: orang, motor, mobil, group")
+    )
+    keterangan = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name=_("Keterangan Tambahan")
+    )
+    aktif = models.BooleanField(
+        default=True,
+        verbose_name=_("Aktif")
+    )
+    urutan = models.PositiveSmallIntegerField(
+        default=1,
+        verbose_name=_("Urutan Tampil")
+    )
 
     class Meta:
-        verbose_name = _("Destinasi Wisata")
-        verbose_name_plural = _("Destinasi Wisata")
+        verbose_name = _("Detail Harga Tiket")
+        verbose_name_plural = _("Detail Harga Tiket")
+        ordering = ['urutan', 'jenis_tiket']
+        unique_together = ['destinasi', 'jenis_tiket', 'nama_tiket']
 
-    def __str__(self):  # 🌀
-        return self.nama
+    def __str__(self):
+        return f"{self.destinasi.nama} - {self.nama_tiket}: Rp{self.harga:,.0f}/{self.satuan}"
+
+    def harga_formatted(self):
+        """Return formatted price in Indonesian Rupiah"""
+        return f"Rp{self.harga:,.0f}"
 
 
 class GambarDestinasi(models.Model):  # Inheritance
